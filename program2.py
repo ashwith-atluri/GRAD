@@ -1,4 +1,3 @@
-import sys
 import math
 import requests
 from svmutil import *
@@ -31,13 +30,11 @@ setPlatform()
 import Leap
 
 
-postData = {'access_token': '365e3c7f6d13e7add5d4ae9214f8e36c26c9c0df', 'args': '0'}
-
-
 def main():
     print("Connecting to controller")
     model = svm_load_model('train2.txt.model')
     controller = Leap.Controller()
+    postData = {'access_token': '365e3c7f6d13e7add5d4ae9214f8e36c26c9c0df', 'args': '0'}
     temp = {}
     x = []
     y = [3.0]
@@ -56,22 +53,22 @@ def main():
     previousID = controller.frame().id
 
     while controller.is_connected:
-        if(count == 100):
+        if count == 100:
             count = 0
             param = 1
             x.append(temp)
             p_labels, p_acc, p_vals = svm_predict(y, x, model)
             valid = False
-            if(p_labels[0] == 1 and grab == 1 and op == 1):
+            if p_labels[0] == 1 and grab == 1 and op == 1:
                 print("Hold!")
                 valid = True
-            if(p_labels[0] == -1 and translation_intent_factor > 0.20):
+            if p_labels[0] == -1 and translation_intent_factor > 0.20:
                 print("Move!")
                 valid = True
-            if(p_labels[0] == 0 and grab == 1 and op == 1):
+            if p_labels[0] == 0 and grab == 1 and op == 1:
                 print("Grab!")
                 valid = True
-            if(p_labels[0] == 2 and translation_intent_factor > 0.50):
+            if p_labels[0] == 2 and translation_intent_factor > 0.50:
                 print("Hello!")
                 valid = True
             prev = p_labels[0]
@@ -85,7 +82,7 @@ def main():
                 requests.post('https://api.particle.io/v1/devices/310021000d47343432313031/led', data=postData)
 
         frame = controller.frame()
-        if(count == 0):
+        if count == 0:
             first = frame
         if frame.id != previousID:
             previousID = frame.id
@@ -93,13 +90,13 @@ def main():
 
             for hand in hands:
                 confidence = hand.confidence
-                if(confidence > 0.2):
+                if confidence > 0.2:
                     translation_intent_factor = hand.translation_probability(first)
                     check = 0
-                    if(hand.grab_strength == 1):
+                    if hand.grab_strength == 1:
                         grab = hand.grab_strength
-                    if(grab == 1):
-                        if(hand.grab_strength < 0.55):
+                    if grab == 1:
+                        if hand.grab_strength < 0.55:
                             op = 1
                     fingers = frame.fingers
                     for finger in fingers:
