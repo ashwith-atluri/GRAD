@@ -167,3 +167,5 @@ fabric.properties
 !/Libraries/LeapMotion/linux64/libLeap.so
 !/Libraries/LeapMotion/win32/LeapPython.pyd
 !/Libraries/LeapMotion/win64/LeapPython.pyd
+
+*.pyc
